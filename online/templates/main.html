@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}AI断案-基于深度学习的文本多分类研究{% endblock %}
+
+{% block page_content %}
+{{ wtf.quick_form(form) }}
+<button id='random_button' class="btn btn-default" style="float: right;" onclick="var txtArea = document.getElementById('input_text');var xmlHttp = new XMLHttpRequest();url = '/random';xmlHttp.open('GET', url, false);xmlHttp.send(null);txtArea.value = xmlHttp.responseText;">
+	随机</button>
+<script>
+	fr = document.getElementsByClassName('form')[0]
+	bt = document.getElementById('random_button')
+	fr.appendChild(bt)
+</script>
+
+<br>
+<table class='table table-bordered' align="middle" style="table-layout:fixed">
+    <tbody>
+    	{%- if combine_res is defined -%}
+	    	{% for res in combine_res %}
+	    	{% set text_nb = loop.index %}
+	    	{%- if text_nb == 1 -%}
+		    	<h5 style="color:#999999;text-align:center;"> ----------------------------------------------   以下为按单句预测结果   ---------------------------------------------- </h5>
+		    	<br>
+		    {%- endif %}
+
+	    	{%- if combine_res|length > 2 -%}
+	    	{%- if text_nb == combine_res|length-1 -%}
+	    	<h5 style="color:#999999;text-align:center;"> ----------------------------------------------   以下为按整段预测结果   ---------------------------------------------- </h5>
+	    	<br>
+	    	{%- endif %}
+	    	{%- endif %}
+
+	    	{%- if text_nb == combine_res|length -%}
+		    	<h5 style="color:#999999;text-align:center;"> ----------------------------------------------   以下为综合预测结果   ---------------------------------------------- </h5>
+		    	<br>
+		    {%- endif %}			
+
+	    	<h4> {{ res[0] }} </h4>
+			
+			<div id="accordion_{{ text_nb }}" role="tablist" aria-multiselectable="true">
+				{%- if res[1]|length < 1 -%}
+				<h7>没有相关法条</h7>
+				<br>
+				{%- endif %}	
+				{% for law_name ,law_con in res[1] %}
+			  	<div class="panel panel-default" style="margin-left: 2em">
+				    <div class="panel-heading" role="tab" id='head_{{ text_nb }}_{{ loop.index  }}'>
+				      <h7 class="panel-title">
+				        <a class="collapsed" data-toggle="collapse" data-parent="#accordion_{{ text_nb}}" href='#tail_{{ text_nb }}_{{ loop.index  }}' aria-expanded="false" aria-controls="{{ text_nb }}_{{ loop.index  }}">
+				          {{ law_name }}
+				        </a>
+				      </h7>
+				    </div>
+				    <div id=tail_{{ text_nb }}_{{ loop.index  }} class="panel-collapse collapse" role="tabpanel" aria-labelledby="head_{{ text_nb }}_{{ loop.index  }}" aria-expanded="false">
+				      	<pre>{{ law_con }}</pre>
+					</div>
+			  	</div>  	
+			  	{% endfor %}
+			<br>
+			{% endfor %}
+			</div>
+		{%- endif %}
+
+    </tbody>
+</table>
+</span>
+{% endblock %}		

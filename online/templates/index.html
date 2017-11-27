@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}webQA{% endblock %}
+{% block page_content %}
+
+<h9 style="color:#999999;">  * 本系统的事实依据来源于 https://zhidao.baidu.com  </h9>
+
+{{ wtf.quick_form(form) }}
+<button id='random_button' class="btn btn-default" style="float: right;" onclick="var txtArea = document.getElementById('input_question');var xmlHttp = new XMLHttpRequest();url = '/random';xmlHttp.open('GET', url, false);xmlHttp.send(null);txtArea.value = xmlHttp.responseText;">
+    随机</button>
+<script>
+    fr = document.getElementsByClassName('form')[0]
+    bt = document.getElementById('random_button')
+    fr.appendChild(bt)
+</script>
+
+<br>
+<table class='table table-bordered' align="middle" style="table-layout:fixed">
+    <tbody>
+        {% if res is defined %}
+        {%- if res|length == 0 -%}
+            <h4>找不到答案</h4>
+        {%- endif %}
+        {% endif %}
+  
+        <div id="accordion" role="tablist" aria-multiselectable="true">
+            {% for law_name ,law_con in res %}
+
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id='head_law_{{ loop.index  }}'>
+                <span class="glyphicon glyphicon-hand-right"></span>
+                <h4 class="panel-title" style="display:inline">
+                    <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href='#tail_law_{{ loop.index  }}' aria-expanded="false" aria-controls=law_{{ loop.index  }}>
+                      {{ law_name  }}
+                    </a>
+                </h4>
+                </div>
+                <div id=tail_law_{{ loop.index  }} class="panel-collapse collapse" role="tabpanel" aria-labelledby=head_law_{{ loop.index  }} aria-expanded="false" TextMode="MultiLine">
+                      <pre>{{ law_con }}</pre>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </tbody>
+</table>
+</span>
+{% endblock %}
